@@ -1,0 +1,54 @@
+package com.poscodx.aoptest.aspect;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+@Component
+@Aspect //AOP설정 bean이구나 알게됨
+public class MyAspect {
+	
+	
+	@Before("execution( public com.poscodx.aoptest.vo.ProductVo com.poscodx.aoptest.service.ProductService.find(String))")
+	public void adviceBefore() {
+		System.out.println("--- before advice ---");
+	}
+	
+	
+	@After("execution( public com.poscodx.aoptest.vo.ProductVo com.poscodx.aoptest.service.ProductService.find(String))")
+	public void adviceAfter() {
+		System.out.println("--- after advice ---");
+	}
+	
+	@AfterReturning("execution(* com.poscodx.aoptest.service.ProductService.find(..))")
+	public void adviceAfterReturning() {
+		System.out.println("--- AfterReturning Advice ---");
+	}
+	
+	
+	@AfterThrowing(value="execution(* *..*.ProductService.*(..))", throwing="ex")
+	public void adviceAfterThrowing(Throwable ex) {
+		System.out.println("--- AfterThrowing Advice ---"+ex+"---");
+	}
+	
+	@Around("execution(* *..*.ProductService.*(..))")
+	public Object adviceAround(ProceedingJoinPoint pjp) throws Throwable {
+		/* Before */		
+		System.out.println("--- Around(Before) ---");
+		
+		/* Point cut Method 실행 */
+		Object[] params = {"Camera"};
+		Object result = pjp.proceed(params);
+		
+		/* After */
+		System.out.println("--- Around(After) ---");
+		return result;
+	}
+	
+	
+}
